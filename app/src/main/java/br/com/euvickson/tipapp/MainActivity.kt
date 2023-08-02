@@ -3,6 +3,7 @@ package br.com.euvickson.tipapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,6 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.euvickson.tipapp.ui.theme.TipAppTheme
@@ -28,15 +31,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApp {
-                Text(text = "Hello Again")
+                TopHeader()
             }
         }
     }
 }
 
-@Preview
+//@Preview
 @Composable
-fun TopHeader() {
+fun TopHeader(totalPerPerson: Double = 0.0) {
     Surface(modifier = Modifier
         .fillMaxWidth()
         .height(150.dp)
@@ -48,8 +51,14 @@ fun TopHeader() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
                 ) {
-            Text(text = "Total per Person")
-            Text(text = "$134.00")
+            val total = "%.2f".format(totalPerPerson)
+            Text(text = "Total per Person",
+            style = MaterialTheme.typography.headlineSmall
+            )
+            Text(text = "$$total",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.ExtraBold
+            )
         }
     }
 }
@@ -68,10 +77,16 @@ fun MyApp(content: @Composable () -> Unit) {
 
 @Preview
 @Composable
-fun GreetingPreview() {
-    TipAppTheme {
-        MyApp {
-            Text(text = "Hello Again")
+fun MainContent() {
+    Surface(modifier = Modifier
+        .padding(2.dp)
+        .fillMaxWidth(),
+        shape = RoundedCornerShape(corner = CornerSize(8.dp)),
+        border = BorderStroke(width = 1.dp, color = Color.LightGray)
+    ) {
+        Column {
+
+
         }
     }
 }
