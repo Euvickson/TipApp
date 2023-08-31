@@ -18,6 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.euvickson.tipapp.components.InputField
 import br.com.euvickson.tipapp.ui.theme.TipAppTheme
+import br.com.euvickson.tipapp.widgets.RoundIconButton
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -133,9 +137,19 @@ fun BillForm(modifier: Modifier = Modifier,
                         modifier = Modifier.align( alignment = Alignment.CenterVertically))
 
                     Spacer(modifier = Modifier.width(120.dp))
+
                     Row (modifier = Modifier.padding(horizontal = 3.dp),
                         horizontalArrangement = Arrangement.End){
 
+                        RoundIconButton(imageVector = Icons.Filled.Remove, onClick = {
+                            Log.d("RoundIconButton", "BillForm: remove")
+                        })
+                        
+                        Text(text = "2", modifier = Modifier.align(Alignment.CenterVertically).padding(start = 9.dp, end = 9.dp))
+
+                        RoundIconButton(imageVector = Icons.Filled.Add, onClick = {
+                            Log.d("RoundIconButton", "BillForm: Added")
+                        })
                     }
                 }
             } else {
