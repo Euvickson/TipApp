@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyApp {
-                TopHeader()
                 MainContent()
             }
         }
@@ -55,22 +54,26 @@ class MainActivity : ComponentActivity() {
 //@Preview
 @Composable
 fun TopHeader(totalPerPerson: Double = 0.0) {
-    Surface(modifier = Modifier
-        .fillMaxWidth()
-        .height(150.dp)
-        .clip(shape = RoundedCornerShape(corner = CornerSize(12.dp))),
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+            .height(150.dp)
+            .clip(shape = RoundedCornerShape(corner = CornerSize(12.dp))),
         color = Color(0xFFE9D7F7)
     ) {
-        Column (
+        Column(
             modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-                ) {
+        ) {
             val total = "%.2f".format(totalPerPerson)
-            Text(text = "Total per Person",
-            style = MaterialTheme.typography.headlineSmall
+            Text(
+                text = "Total per Person",
+                style = MaterialTheme.typography.headlineSmall
             )
-            Text(text = "$$total",
+            Text(
+                text = "$$total",
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.ExtraBold
             )
@@ -93,7 +96,7 @@ fun MyApp(content: @Composable () -> Unit) {
 @Preview
 @Composable
 fun MainContent() {
-    BillForm() {billAmt ->
+    BillForm { billAmt ->
         Log.d("AMT", "MainContent: $billAmt")
     }
 
@@ -101,63 +104,119 @@ fun MainContent() {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun BillForm(modifier: Modifier = Modifier,
-             onValChange: (String) -> Unit = {}
+fun BillForm(
+    modifier: Modifier = Modifier,
+    onValChange: (String) -> Unit = {}
 ) {
-    val totalBillState = remember{ mutableStateOf("") }
+    val totalBillState = remember { mutableStateOf("") }
     val validState = totalBillState.value.trim().isNotEmpty()
     val keyboardController = LocalSoftwareKeyboardController.current
-    Surface(modifier = Modifier
-        .padding(2.dp)
-        .fillMaxWidth(),
-        shape = RoundedCornerShape(corner = CornerSize(8.dp)),
-        border = BorderStroke(width = 1.dp, color = Color.LightGray)
-    ) {
-        Column (modifier = Modifier.padding(6.dp),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.Start) {
-            InputField(
-                valueState = totalBillState,
-                labelId = "Enter Bill",
-                enabled = true,
-                isSingleLine = true,
-                onAction = KeyboardActions {
+    val sliderPositionState = remember { mutableStateOf(0f) }
+    val splitByState = remember { mutableStateOf(1) }
+
+
+    Column (modifier = modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)) {
+        TopHeader()
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Surface(
+            modifier = modifier
+                .padding(2.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(corner = CornerSize(8.dp)),
+            border = BorderStroke(width = 1.dp, color = Color.LightGray)
+        ) {
+            Column(
+                modifier = Modifier.padding(6.dp),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.Start
+            ) {
+                InputField(
+                    valueState = totalBillState,
+                    labelId = "Enter Bill",
+                    enabled = true,
+                    isSingleLine = true,
+                    onAction = KeyboardActions {
                         onValChange(totalBillState.value.trim())
                         keyboardController?.hide()
-                    return@KeyboardActions
-                }
-            )
+                        return@KeyboardActions
+                    }
+                )
 
 
-            if (validState) {
-                Row (modifier = Modifier.padding(3.dp),
-                    horizontalArrangement = Arrangement.Start) {
+                Row(
+                    modifier = Modifier.padding(3.dp),
+                    horizontalArrangement = Arrangement.Start
+                ) {
 
-                    Text(text = "Split",
-                        modifier = Modifier.align( alignment = Alignment.CenterVertically))
+                    Text(
+                        text = "Split",
+                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                    )
 
                     Spacer(modifier = Modifier.width(120.dp))
 
-                    Row (modifier = Modifier.padding(horizontal = 3.dp),
-                        horizontalArrangement = Arrangement.End){
+                    Row(
+                        modifier = Modifier.padding(horizontal = 3.dp),
+                        horizontalArrangement = Arrangement.End
+                    ) {
 
                         RoundIconButton(imageVector = Icons.Filled.Remove, onClick = {
-                            Log.d("RoundIconButton", "BillForm: remove")
+
                         })
-                        
-                        Text(text = "2", modifier = Modifier.align(Alignment.CenterVertically).padding(start = 9.dp, end = 9.dp))
+
+                        Text(
+                            text = "2", modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .padding(start = 9.dp, end = 9.dp)
+                        )
 
                         RoundIconButton(imageVector = Icons.Filled.Add, onClick = {
                             Log.d("RoundIconButton", "BillForm: Added")
                         })
                     }
                 }
-            } else {
-                Box (){
+                //Tip Row
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 3.dp, vertical = 12.dp)
+                ) {
+                    Text(
+                        text = "Tip",
+                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                    )
+
+                    Spacer(modifier = modifier.width(200.dp))
+
+                    Text(
+                        text = "R$33.00",
+                        modifier = Modifier.align(alignment = Alignment.CenterVertically)
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Text(text = "33%")
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    //Slider
+                    Slider(
+                        value = sliderPositionState.value,
+                        onValueChange = { newVal ->
+                            sliderPositionState.value = newVal
+                            Log.d("Slider", "BillForm: $newVal")
+                        },
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                        steps = 5
+                    )
 
                 }
             }
         }
     }
-
 }
