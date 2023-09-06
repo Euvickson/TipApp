@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.euvickson.tipapp.components.InputField
 import br.com.euvickson.tipapp.ui.theme.TipAppTheme
+import br.com.euvickson.tipapp.util.calculateTotalTip
 import br.com.euvickson.tipapp.widgets.RoundIconButton
 
 class MainActivity : ComponentActivity() {
@@ -112,8 +113,10 @@ fun BillForm(
     val validState = totalBillState.value.trim().isNotEmpty()
     val keyboardController = LocalSoftwareKeyboardController.current
     val sliderPositionState = remember { mutableStateOf(0f) }
+    val tipPercentage = (sliderPositionState.value * 100).toInt()
     val splitByState = remember { mutableStateOf(1) }
     val range = IntRange(start = 1, endInclusive = 100)
+    val tipAmountState = remember { mutableStateOf(0.0) }
 
     Column (modifier = modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)) {
         TopHeader()
@@ -192,7 +195,7 @@ fun BillForm(
                     Spacer(modifier = modifier.width(200.dp))
 
                     Text(
-                        text = "R$33.00",
+                        text = "R$${tipAmountState.value}",
                         modifier = Modifier.align(alignment = Alignment.CenterVertically)
                     )
                 }
@@ -202,7 +205,7 @@ fun BillForm(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
-                    Text(text = "33%")
+                    Text(text = "$tipPercentage%")
 
                     Spacer(modifier = Modifier.height(14.dp))
 
@@ -211,10 +214,9 @@ fun BillForm(
                         value = sliderPositionState.value,
                         onValueChange = { newVal ->
                             sliderPositionState.value = newVal
-                            Log.d("Slider", "BillForm: $newVal")
+                            tipAmountState.value = calculateTotalTip(totalBill = totalBillState.value.toDouble(), tipPercentage = tipPercentage)
                         },
-                        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                        steps = 5
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                     )
 
                 }
