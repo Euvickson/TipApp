@@ -25,6 +25,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -98,16 +99,25 @@ fun MyApp(content: @Composable () -> Unit) {
 @Preview
 @Composable
 fun MainContent() {
-    BillForm { billAmt ->
-        Log.d("AMT", "MainContent: $billAmt")
-    }
+    val splitByState = remember { mutableStateOf(1) }
+    val tipAmountState = remember { mutableStateOf(0.0) }
+    val totalPerPersonState = remember { mutableStateOf(0.0) }
 
+    BillForm(
+        splitByState = splitByState,
+        tipAmountState = tipAmountState,
+        totalPerPersonState = totalPerPersonState
+    )
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BillForm(
     modifier: Modifier = Modifier,
+    range: IntRange = 1..100,
+    splitByState: MutableState<Int>,
+    tipAmountState: MutableState<Double>,
+    totalPerPersonState: MutableState<Double>,
     onValChange: (String) -> Unit = {}
 ) {
     val totalBillState = remember { mutableStateOf("") }
@@ -115,10 +125,6 @@ fun BillForm(
     val sliderPositionState = remember { mutableStateOf(0f) }
     val validState = totalBillState.value.trim().isNotEmpty()
     val tipPercentage = (sliderPositionState.value * 100).toInt()
-    val splitByState = remember { mutableStateOf(1) }
-    val range = IntRange(start = 1, endInclusive = 100)
-    val tipAmountState = remember { mutableStateOf(0.0) }
-    val totalPerPersonState = remember { mutableStateOf(0.0) }
 
     Column(modifier = modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp)) {
         TopHeader(totalPerPerson = totalPerPersonState.value)
